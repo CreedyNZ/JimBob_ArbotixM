@@ -63,22 +63,23 @@ def startup():
     Thread(target=play, args=("/home/hexy/git/JimBob2/Python/Sounds/r2d2.ogg",1)).start()
     reset()
     
+    rise()
     
 def rise():
     x = 0
-    while x < 5:
-    SerialOut.translate(0,0,90)
-        time.sleep(0.1)
-        x +=1
+    while x < 10:
+       SerialOut.translate(0,0,90)
+       time.sleep(0.1)
+       x +=1
     x = 0
     SerialOut.rotate(90,0,0)
-    SerialOut.wait(5)                        
+    SerialOut.wait(10)                        
     SerialOut.rotate(-90,0,0)                     
-    SerialOut.wait(5) 
-    while x < 5:
-    SerialOut.translate(0,0,-90)
-        time.sleep(0.1)
-        x +=1
+    SerialOut.wait(10) 
+    while x < 10:
+       SerialOut.translate(0,0,-90)
+       time.sleep(0.1)
+       x +=1
     
 
 def reset():
@@ -88,6 +89,7 @@ def reset():
   GPIO.output(resetpin, GPIO.LOW)
   time.sleep(0.10)
   GPIO.output(resetpin, GPIO.HIGH)
+  time.sleep(2)
 #Travel = t then angle (0 - 360),speed (0 - 120),rotate (-100 - 100), repeat (0+)
 #Rotate = r then left,right,up, repeat
 #Translate = r then left,right,up, repeat
@@ -112,19 +114,21 @@ lypos = [[1578,2067],[1613,2070],[1648,2090],[1683,2101],[1718,2113]]
 espeak.synth("Clear the area")
 lc = 0
 ld = 0 
-for ld in range (1,4):
-   for lc in range (1,9):
+for ld in range (0,4):
+   PServo.MoveServo(1,lypos[ld][1])
+   PServo.MoveServo(0,lypos[ld][0])
+   PServo.MoveServo(2,lxpos[lc])
+   time.sleep(1)  
+   for lc in range (0,9):
        try: 
            PServo.MoveServo(2,lxpos[lc])
-           PServo.MoveServo(1,lypos[ld][1])
-           PServo.MoveServo(0,lypos[ld][0])
-           time.sleep(0.2)                                                                                                                    
+           time.sleep(0.1)                                                                                                                    
            ldata[ld,lc] = lidar.getDistance()
        except IOError:
            print 'No lidar data'
        lc += 1
-   ld += 1      
-lc = 0
+   lc = 0  
+   ld += 1    
 ld = 0
 print ldata      
 
