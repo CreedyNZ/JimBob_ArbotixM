@@ -35,9 +35,20 @@ lidar = Lidar_Lite()
 #from AnaSensorData import readsensor
 import PServo
 GPIO.setmode(GPIO.BCM)
-pin = 13
-GPIO.setup(pin, GPIO.OUT)
-ldata = numpy.zeros((5, 9),dtype=numpy.int)
+resetpin = 13
+GPIO.setup(resetpin, GPIO.OUT)
+#matrix for Lidar Data
+ldata = numpy.zeros((4, 9),dtype=numpy.int)
+#Some random variables
+a = 0
+s = 0
+l = 0
+r = 0
+start_time = time.time()
+delay = 0.1  # set rest time between command sends
+checksum = 0
+
+
 
 print ("Hello")
 
@@ -48,19 +59,6 @@ def play(file,*args):
   while pygame.mixer.music.get_busy() == True:
       continue
       
-      
-lidar = Lidar_Lite()
-#anasensor = readsensor())
-
-a = 0
-s = 0
-l = 0
-r = 0
-start_time = time.time()
-delay = 0.1  # set rest time between command sends
-checksum = 0
-
-
 def startup():
     Thread(target=play, args=("/home/hexy/git/JimBob2/Python/Sounds/r2d2.ogg",1)).start()
     reset()
@@ -69,72 +67,34 @@ def startup():
 def rise():
     x = 0
     while x < 5:
-  #      SerialOut.translate(0,0,90)
+    SerialOut.translate(0,0,90)
         time.sleep(0.1)
         x +=1
-    x = 0    
+    x = 0
+    SerialOut.rotate(90,0,0)
+    SerialOut.wait(5)                        
+    SerialOut.rotate(-90,0,0)                     
+    SerialOut.wait(5) 
     while x < 5:
-   #     SerialOut.translate(0,0,-90)
+    SerialOut.translate(0,0,-90)
         time.sleep(0.1)
         x +=1
     
 
 def reset():
-  #rise()
   PServo.ResetServo()
-  time.sleep(5)
-  PServo.LookL()
-  time.sleep(5)
-  PServo.LookR()
-  time.sleep(5)
-  GPIO.output(pin, GPIO.HIGH)
+  GPIO.output(resetpin, GPIO.HIGH)
   time.sleep(0.1)
-  GPIO.output(pin, GPIO.LOW)
+  GPIO.output(resetpin, GPIO.LOW)
   time.sleep(0.10)
-  GPIO.output(pin, GPIO.HIGH)
+  GPIO.output(resetpin, GPIO.HIGH)
 #Travel = t then angle (0 - 360),speed (0 - 120),rotate (-100 - 100), repeat (0+)
 #Rotate = r then left,right,up, repeat
 #Translate = r then left,right,up, repeat
 
-walktest = [('t',0,75,0,30),('t',180,75,0,30),('t',90,100,0,20),('t',270,100,0,20),('t',45,50,0,30),('t',135,50,0,30),('t',0,0,50,10),('t',0,0,-50,30)]
 
 """ Startup """
-#startup()
 
-#Travel angle,speed,rotate
-#Rotate left,right,up
-#Translate left,right,up
-"""
-class Move:
-    Class to create movements
-    def __init__(self, movearray):
-        self.movecount = 0
-        self.movearray = movearray
-
-    def moves(self):
-          #create move commands for sending to the Arbotix_M
-          for k in self.movearray:   
-             movearray[k,1] = atrib[k] + 128
-          checksum = 0
-          self.ser.write(chr(255))
-          for k in self.commandtypes:   
-             self.ser.write(chr(atrib[k]))
-             checksum += int(atrib[k])
-          checksum = (255 - (checksum%256))
-          print checksum
-          self.ser.write(chr(checksum))
-
-          response = serout.read()
-          print (">>" ,response)
-          self.movecount += 1
-          print self.movecount
-          print'*'
-          print atrib['i_ComMode']
-
-          move_time = time.time()
-        
-stdpkt  = Move(config.stdatrib, config.addatrib)  #create standard packet 
-g=0"""
 startup()
 connected = lidar.connect(1)
 espeak.synth("Hello, Jim Bob ready to go")
@@ -200,10 +160,7 @@ def turnL():
            time.sleep(0.1)
            x +=1  
           
-SerialOut.rotate(90,0,0)
-time.sleep(5)                        
-SerialOut.rotate(-90,0,0)                     
-time.sleep(5)                 
+                 
                   
 while 1:  
   if lc < 8:
