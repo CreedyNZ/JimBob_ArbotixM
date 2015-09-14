@@ -85,6 +85,7 @@ class SController:
         self.usb.write(cmd)
         # Record Target value
         self.Targets[chan] = target
+           
         
     # Set speed of channel
     # Speed is measured as 0.25microseconds/10milliseconds
@@ -161,7 +162,17 @@ class SController:
 
 Maestro = SController()
         
-   
+def SetX(xangle):
+    position = (xangle*33.334)+3460
+    Maestro.setTarget(2,position)   
+
+def SetY(Yangle):
+    positiony1 = (Yangle*49.2)+8205
+    positiony2 = (Yangle*140)+6172
+    Maestro.setTarget(0,positiony1)
+    Maestro.setTarget(1,positiony2) 
+
+
 def MoveServo(num,position):
     Maestro.setTarget(num,position*4)
     

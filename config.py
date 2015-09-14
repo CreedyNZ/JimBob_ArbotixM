@@ -17,6 +17,7 @@ atrib = {'i_ComMode': 0,
 'i_LegLiftHeight': 0,
 'i_LegLiftHeight': 0,
 'i_Bal': 0,
+'i_Mode': 0,
 'i_Gait': 0}
 
 #attributes for a standard packet

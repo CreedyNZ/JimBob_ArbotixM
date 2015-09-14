@@ -26,30 +26,20 @@ import math
 from binascii import b2a_hex
 
 atrib = config.atrib
-Balance = 0
-DOUBLE_T = 0
-DOUBLE_H = 0
 
 RESET  = 0
 WALK = 10 
 ROTATE = 20
 TRANSLATE = 30
-SINLEG = 16
-BALANCE = 32
-DOUBLE_T = 64
+SINLEG = 40
+
 vals = [0,0,0,0,0]
 x = 1
 
-#define BALANCE
-#define RESET       0x01 //Single leg
-#define WALK        0x02 //Single leg
-#define ROTATE      0x04 //Single leg
-#define TRANSLATE    0x06 //Single leg
-#define SINLEG      0x08 //Single leg
-#define BALANCE     0x10  //Balance Mode
-#define SIT         0x20   //Sit_Stand
-#define DOUBLE_T    0x40  //Double Travel
-#define DOUBLE_H    0x80  //Double Height
+#define BALANCE     0x01
+#define DOUBLE_T    0x02 //Double travel
+#define STAND         0x04 //Sit Stand
+
 
 start_time = time.time()
 movecount = 0
@@ -83,16 +73,12 @@ class Driver:
              atrib[k] = atrib[k] + 128
           checksum = 0
           self.ser.write(chr(255))
+          atrib['i_ComMode'] = atrib['i_Mode'] + atrib['i_Gait']
           for k in self.commandtypes:   
              self.ser.write(chr(atrib[k]))
              checksum += int(atrib[k])
           checksum = (255 - (checksum%256))
-          print checksum
           self.ser.write(chr(checksum))
-          """if (self.ser.read() > 0):
-             response = self.ser.read()
-             response = ord(response)
-             print (">>" ,response)"""
           move_time = time.time()
         
     def getpkt(self):
@@ -127,7 +113,7 @@ def getpkt():
      stdpkt.getpkt()
      
 def setgait(gait):
-     if (gait != atrib['i_a_gait']):
+     if (gait != atrib['i_gait']):
        r = 5
        while r > 0:
            stand()
@@ -135,20 +121,19 @@ def setgait(gait):
            r -= 1 
        r = 5
        while r > 0:
-           atrib['i_a_gait'] = gait
+           atrib['i_gait'] = gait
            sendpkt()
            time.sleep(0.1)
            r -= 1    
 
 def stand():
-     atrib['i_ComMode'] = RESET;
+     atrib['i_Mode'] = RESET;
      atrib['i_leftV'] = 0
      atrib['i_leftH'] = 0
      atrib['i_RightV'] = 0
      atrib['i_RightH']= 0
      atrib['buttons']= 0
      atrib['ext']= 0
-     stdpkt.flush()
      stdpkt.sendpkt()
      
 def wait(r):
@@ -162,20 +147,26 @@ def wait(r):
       stdpkt.sendpkt()
       time.sleep(0.1)
       r -= 1
+      
+def state(balance,doubleT,stand)
+    atrib['i_buttons'] = 0
+    if(balance) atrib['i_buttons'] += 1
+    if(doubleT) atrib['i_buttons'] += 2
+    if(stand) atrib['i_buttons'] += 4
+    stdpkt.sendpkt()
 
 def travel(angle,speed,rotate): #calculate travel related commands
-     atrib['i_ComMode'] = WALK + atrib['i_Gait'];  
+     atrib['i_Mode'] = WALK
      anglerad =  math.radians(angle) 
      atrib['i_leftV'] = 0
      atrib['i_leftH'] = rotate
      atrib['i_RightV'] = int(math.cos (anglerad) * speed)
      atrib['i_RightH']= int(math.sin (anglerad) * speed)
-     atrib['buttons']= 0
      atrib['ext']= 0
      stdpkt.sendpkt()
      
 def rotate(left,right,up): #calculate rotate related commands
-     atrib['i_ComMode'] = ROTATE;  
+     atrib['i_Mode'] = ROTATE
      atrib['i_leftV'] = up
      atrib['i_leftH'] = left
      atrib['i_RightV'] = 0
@@ -185,7 +176,7 @@ def rotate(left,right,up): #calculate rotate related commands
      stdpkt.sendpkt()
      
 def translate(left,right,up): #calculate translate related commands
-     atrib['i_ComMode'] = TRANSLATE;  
+     atrib['i_Mode'] = TRANSLATE 
      atrib['i_leftV'] = up
      atrib['i_leftH'] = left
      atrib['i_RightV'] = 0

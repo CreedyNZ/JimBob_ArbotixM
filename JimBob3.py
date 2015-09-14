@@ -49,9 +49,6 @@ delay = 0.1  # set rest time between command sends
 checksum = 0
 
 
-
-print ("Hello")
-
 def play(file,*args):
   pygame.mixer.init()
   pygame.mixer.music.load(file)
@@ -62,7 +59,6 @@ def play(file,*args):
 def startup():
     Thread(target=play, args=("/home/hexy/git/JimBob2/Python/Sounds/r2d2.ogg",1)).start()
     reset()
-    
     rise()
     
 def rise():
@@ -87,12 +83,9 @@ def reset():
   GPIO.output(resetpin, GPIO.HIGH)
   time.sleep(0.1)
   GPIO.output(resetpin, GPIO.LOW)
-  time.sleep(0.10)
+  time.sleep(0.1)
   GPIO.output(resetpin, GPIO.HIGH)
   time.sleep(2)
-#Travel = t then angle (0 - 360),speed (0 - 120),rotate (-100 - 100), repeat (0+)
-#Rotate = r then left,right,up, repeat
-#Translate = r then left,right,up, repeat
 
 
 """ Startup """
