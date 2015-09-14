@@ -57,6 +57,11 @@ def play(file,*args):
       continue
       
 def startup():
+    x = 0
+    while x < 10:
+       SerialOut.state(0,0,1)
+       time.sleep(0.1)
+       x +=1
     Thread(target=play, args=("/home/hexy/git/JimBob2/Python/Sounds/r2d2.ogg",1)).start()
     reset()
     rise()
@@ -87,7 +92,84 @@ def reset():
   GPIO.output(resetpin, GPIO.HIGH)
   time.sleep(2)
 
-
+def test():
+  
+  x = 0
+  while x < 10:
+       SerialOut.state(0,0,1)
+       time.sleep(0.1)
+       x +=1
+  x = 0
+  while x < 10:
+       SerialOut.translate(0,0,55)
+       time.sleep(0.1)
+       x +=1
+  while (1):
+    for g in range (0,5):
+        SerialOut.setgait(g)
+        print("gait: ")
+        print(g)
+        x = 0 
+        while x < 30:
+           SerialOut.travel(0,100,0)
+           time.sleep(0.1)
+           x +=1 
+        x = 0 
+        while x < 20:
+           SerialOut.travel(180,100,0)
+           time.sleep(0.1)
+           x +=1  
+  x = 0
+  while x < 10:
+       SerialOut.state(1,0,1)
+       time.sleep(0.1)
+       x +=1
+  x = 0
+  while x < 10:
+       SerialOut.translate(0,0,55)
+       time.sleep(0.1)
+       x +=1
+  while (1):
+    for g in range (0,5):
+        SerialOut.setgait(g)
+        print("gait: ")
+        print(g)
+        x = 0 
+        while x < 30:
+           SerialOut.travel(0,100,0)
+           time.sleep(0.1)
+           x +=1 
+        x = 0 
+        while x < 20:
+           SerialOut.travel(180,100,0)
+           time.sleep(0.1)
+           x +=1 
+  x = 0
+  while x < 10:
+       SerialOut.state(0,1,1)
+       time.sleep(0.1)
+       x +=1
+  x = 0
+  while x < 10:
+       SerialOut.translate(0,0,55)
+       time.sleep(0.1)
+       x +=1
+  while (1):
+    for g in range (0,5):
+        SerialOut.setgait(g)
+        print("gait: ")
+        print(g)
+        x = 0 
+        while x < 30:
+           SerialOut.travel(0,100,0)
+           time.sleep(0.1)
+           x +=1 
+        x = 0 
+        while x < 20:
+           SerialOut.travel(180,100,0)
+           time.sleep(0.1)
+           x +=1                             
+                 
 """ Startup """
 
 startup()
@@ -96,7 +178,7 @@ espeak.synth("Hello, Jim Bob ready to go")
 c = 0
 config.atrib['i_Gait'] = 0
 SerialOut.wait(25)
-print "here1"
+test()
 #sensordata = readsensor()
 priorread = time.time()+2
 print "lidar"
@@ -156,7 +238,22 @@ def turnL():
            print ('left')
            time.sleep(0.1)
            x +=1  
-          
+           
+def test():
+  SerialOut.wait(1)
+  while (1):
+    for g in range (0,5):
+        SerialOut.setgait(g)
+        print("gait: ")
+        print(g)
+        while x < 20:
+           SerialOut.travel(0,100,0)
+           time.sleep(0.1)
+           x +=1  
+        while x < 20:
+           SerialOut.travel(180,100,0)
+           time.sleep(0.1)
+           x +=1          
                  
                   
 while 1:  

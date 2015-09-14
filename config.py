@@ -16,6 +16,8 @@ atrib = {'i_ComMode': 0,
 'i_SelectedLeg': 0,
 'i_LegLiftHeight': 0,
 'i_LegLiftHeight': 0,
+'i_Buttons': 0,
+'i_Ext':0,
 'i_Bal': 0,
 'i_Mode': 0,
 'i_Gait': 0}
@@ -26,8 +28,8 @@ stdatrib = ['i_ComMode',
     'i_leftH',
     'i_RightV',
     'i_RightH',
-    'buttons',
-    'ext']
+    'i_Buttons',
+    'i_Ext']
 
 #attributes with negative values
 addatrib = ['i_leftV',

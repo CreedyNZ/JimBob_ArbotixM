@@ -74,12 +74,18 @@ class Driver:
           checksum = 0
           self.ser.write(chr(255))
           atrib['i_ComMode'] = atrib['i_Mode'] + atrib['i_Gait']
-          for k in self.commandtypes:   
+          print (atrib['i_ComMode'] ,atrib['i_Mode'] , atrib['i_Gait'])
+          for k in self.commandtypes: 
+             print (k, chr(atrib[k]))
              self.ser.write(chr(atrib[k]))
              checksum += int(atrib[k])
           checksum = (255 - (checksum%256))
           self.ser.write(chr(checksum))
           move_time = time.time()
+          atrib['i_leftV'] = 0
+          atrib['i_leftH'] = 0
+          atrib['i_RightV'] = 0
+          atrib['i_RightH']= 0
         
     def getpkt(self):
            #get packets fromthe Arbotix_Mo        
@@ -113,7 +119,7 @@ def getpkt():
      stdpkt.getpkt()
      
 def setgait(gait):
-     if (gait != atrib['i_gait']):
+     if (gait != atrib['i_Gait']):
        r = 5
        while r > 0:
            stand()
@@ -121,8 +127,8 @@ def setgait(gait):
            r -= 1 
        r = 5
        while r > 0:
-           atrib['i_gait'] = gait
-           sendpkt()
+           atrib['i_Gait'] = gait
+           stdpkt.sendpkt()
            time.sleep(0.1)
            r -= 1    
 
@@ -132,7 +138,6 @@ def stand():
      atrib['i_leftH'] = 0
      atrib['i_RightV'] = 0
      atrib['i_RightH']= 0
-     atrib['buttons']= 0
      atrib['ext']= 0
      stdpkt.sendpkt()
      
@@ -142,17 +147,20 @@ def wait(r):
       atrib['i_leftH'] = 0
       atrib['i_RightV'] = 0
       atrib['i_RightH']= 0
-      atrib['buttons']= 0
       atrib['ext']= 0
       stdpkt.sendpkt()
       time.sleep(0.1)
       r -= 1
       
-def state(balance,doubleT,stand)
-    atrib['i_buttons'] = 0
-    if(balance) atrib['i_buttons'] += 1
-    if(doubleT) atrib['i_buttons'] += 2
-    if(stand) atrib['i_buttons'] += 4
+def state(balance,doubleT,stand):
+    atrib['i_Buttons'] = 0
+    if(balance):
+     atrib['i_Buttons'] += 1
+    if(doubleT):
+     atrib['i_Buttons'] += 2
+    if(stand):
+     atrib['i_Buttons'] += 4
+    print (atrib['i_Buttons'])
     stdpkt.sendpkt()
 
 def travel(angle,speed,rotate): #calculate travel related commands
@@ -171,7 +179,6 @@ def rotate(left,right,up): #calculate rotate related commands
      atrib['i_leftH'] = left
      atrib['i_RightV'] = 0
      atrib['i_RightH']= right
-     atrib['buttons']= 0
      atrib['ext']= 0
      stdpkt.sendpkt()
      
@@ -181,7 +188,6 @@ def translate(left,right,up): #calculate translate related commands
      atrib['i_leftH'] = left
      atrib['i_RightV'] = 0
      atrib['i_RightH']= right
-     atrib['buttons']= 0
      atrib['ext']= 0
      stdpkt.sendpkt()
 
