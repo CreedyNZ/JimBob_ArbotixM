@@ -63,6 +63,7 @@ def startup():
        time.sleep(0.1)
        x +=1
     reset()
+    time.sleep(1)
     rise()
     
 def rise():
