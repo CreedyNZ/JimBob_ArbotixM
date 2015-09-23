@@ -74,9 +74,7 @@ class Driver:
           checksum = 0
           self.ser.write(chr(255))
           atrib['i_ComMode'] = atrib['i_Mode'] + atrib['i_Gait']
-          print (atrib['i_ComMode'] ,atrib['i_Mode'] , atrib['i_Gait'])
           for k in self.commandtypes: 
-             print (k, chr(atrib[k]))
              self.ser.write(chr(atrib[k]))
              checksum += int(atrib[k])
           checksum = (255 - (checksum%256))
@@ -131,6 +129,16 @@ def setgait(gait):
            stdpkt.sendpkt()
            time.sleep(0.1)
            r -= 1    
+           
+def backup(angle):
+       r = 2
+       while r > 0:
+           travel(180,100,0)
+           r -= 1 
+       r = 20
+       while r > 0:
+           travel(0,0,angle)
+           r -= 1               
 
 def stand():
      atrib['i_Mode'] = RESET;

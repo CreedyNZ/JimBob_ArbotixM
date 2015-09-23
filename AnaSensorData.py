@@ -32,22 +32,30 @@ def readsensor():
   averagel = 0
   averager = 0
   #print ("Here3")
-  raw = adc.read_voltage(2)/ 0.009766 #Read Sonar
+  raw = adc.read_voltage(7)/ 0.009766 #Read Sonar
   distance = raw * 2.54
   dist_ana[0] = int(distance)
   
   #Get a sampling of 5 readings from sensor
   for i in range (0,4):
-    raw = adc.read_voltage(4)
+    raw = adc.read_voltage(6)
     distancel = 27.86 * pow(raw,-1.15)
-    raw = adc.read_voltage(3)
+    raw = adc.read_voltage(8)
     distancer = 27.86 * pow(raw,-1.15)
     averagel = averagel + distancel
     averager = averager + distancer
     time.sleep(0.2)
     
-  dist_ana[1] = int (averagel / 5)
-  dist_ana[2] = int (averager / 5)
+  dist_ana[1] = min(int (averagel / 5),56)
+  dist_ana[2] = min(int (averager / 5),56)
+  sensordata = {
+              'F' : dist_ana[0],
+              'LF' : dist_ana[2],
+              'RF' : dist_ana[1]}
+  
 
-  return(dist_ana)
+  return(sensordata)
+  
+  
+
                                           
