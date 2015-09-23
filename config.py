@@ -1,6 +1,7 @@
 #Define Python dictionary of key values
 
 coords = {
+'i_Offset':0,
 'i_TarPos':[0,0],
 'i_CurPos':[0,0]}
 

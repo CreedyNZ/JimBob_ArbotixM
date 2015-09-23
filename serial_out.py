@@ -74,9 +74,7 @@ class Driver:
           checksum = 0
           self.ser.write(chr(255))
           atrib['i_ComMode'] = atrib['i_Mode'] + atrib['i_Gait']
-          print (atrib['i_ComMode'] ,atrib['i_Mode'] , atrib['i_Gait'])
           for k in self.commandtypes: 
-             print (k, chr(atrib[k]))
              self.ser.write(chr(atrib[k]))
              checksum += int(atrib[k])
           checksum = (255 - (checksum%256))

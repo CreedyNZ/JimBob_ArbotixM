@@ -25,7 +25,7 @@ import serial
 import RPi.GPIO as GPIO
 import serial_out
 import p_servo
-import navigate
+from navigate import nav
 import config
 import pygame
 import numpy
@@ -103,7 +103,11 @@ def reset():
 startup()
 connected = lidar.connect(1)
 coords['i_TarPos'] = [20,20]
-coords['i_TarPos'] = [1,1]
+coords['i_CurPos'] = [1,1]
+coords['offset'] = nav.offset()
+susptime = time.time()
+haz = 0 
+temp = 0
 espeak.synth("Hello, Jim Bob ready to go")
 c = 0
 serial_out.setgait(0)
@@ -151,6 +155,10 @@ def walk(a):
     serial_out.travel(a,100,0)
     serial_out.setgait(5)
     print ('walk ', a)
+    
+def turn(t):
+    serial_out.travel(0,100,t)
+    print ('turn ', t)    
     
 def run(a):
     global s
@@ -200,16 +208,41 @@ def test():
                   
 while 1:  
   sensordata = readsensor()
-  navigate.hdgchange()
+  #use temporary heading for 5 seconds
+  if time.time() - susptime > 10:
+    temp = 0
+  nav.hdgchange(temp)
   a = 0
   print sensordata  
   if sensordata['F'] < 30 :
       if ((sensordata['LF'] > 45) and ((priorturn != 'l') or ((time.time() - turn_time ) > 20))): 
-         turnL()
+         temp = -90
+         nav.hdgchange(temp)
+         susptime = time.time()
       elif ((sensordata['RF'] > 45) and ((priorturn != 'r') or ((time.time() - turn_time ) > 20))):  
-         turnR()
+         temp = 90
+         nav.hdgchange(temp)
+         susptime = time.time()
       else:
-         serial_out.backup(90) 
+           haz +=1
+           
+           x=0
+           while x < 3:     
+               a = 180
+               walk(a) 
+               x +=1
+           nav.hdgchange(temp)
+           x=0
+           while x < 4:     
+               temp = 90
+               nav.hdgchange(temp)
+               susptime = time.time()
+               x +=1
+           x=0
+           while x < 3:     
+               a = 0
+               walk(a) 
+               x +=1           
   elif ((sensordata['RF'] > 45) and (sensordata['LF'] < 35)):
            a = 90
            walk(a)
@@ -220,7 +253,15 @@ while 1:
      run(a)
   else: 
       walk (a)                
-
+  if haz > 3:
+     haz = 0 
+     if px >= 20:
+        px = 1
+     else: px += 5   
+     if py >= 20:
+        py = 1
+     else: py += 10    
+     coords['i_TarPos'] = [px,py]
   
   
   
