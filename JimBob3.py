@@ -23,28 +23,25 @@ import sys, time, os
 sys.path.append('/home/hexy/JimBob/Lidar-Lite/python')
 import serial     
 import RPi.GPIO as GPIO
-import SerialOut
-import PServo
+import serial_out
+import p_servo
+import navigate
 import config
 import pygame
 import numpy
 from espeak import espeak
 from threading import Thread
 from lidar_lite import Lidar_Lite
-from HMCmag import hmcmag
 lidar = Lidar_Lite()
 from AnaSensorData import readsensor
-import PServo
+import p_servo
 GPIO.setmode(GPIO.BCM)
 resetpin = 13
 GPIO.setup(resetpin, GPIO.OUT)
 #matrix for Lidar Data
 ldata = numpy.zeros((4, 9),dtype=numpy.int)
 #Some random variables
-targetheading = 0
-currentheading = 0 
-#heading deadzone
-headingzone = 20
+coords = config.coords
 a = 0
 s = 0
 l = 0
@@ -66,7 +63,7 @@ def play(file,*args):
 def startup():
     x = 0
     while x < 10:
-       SerialOut.state(0,0,1)
+       serial_out.state(0,0,1)
        time.sleep(0.1)
        x +=1
     Thread(target=play, args=("/home/hexy/git/JimBob2/Python/Sounds/r2d2.ogg",1)).start()
@@ -77,22 +74,22 @@ def startup():
 def rise():
     x = 0
     while x < 10:
-       SerialOut.translate(0,0,90)
+       serial_out.translate(0,0,90)
        time.sleep(0.1)
        x +=1
     x = 0
-    SerialOut.rotate(90,0,0)
-    SerialOut.wait(10)                        
-    SerialOut.rotate(-90,0,0)                     
-    SerialOut.wait(10) 
+    serial_out.rotate(90,0,0)
+    serial_out.wait(10)                        
+    serial_out.rotate(-90,0,0)                     
+    serial_out.wait(10) 
     while x < 10:
-       SerialOut.translate(0,0,-90)
+       serial_out.translate(0,0,-90)
        time.sleep(0.1)
        x +=1
     
 
 def reset():
-  PServo.ResetServo()
+  p_servo.ResetServo()
   GPIO.output(resetpin, GPIO.HIGH)
   time.sleep(0.1)
   GPIO.output(resetpin, GPIO.LOW)
@@ -105,30 +102,30 @@ def reset():
 
 startup()
 connected = lidar.connect(1)
+coords['i_TarPos'] = [20,20]
+coords['i_TarPos'] = [1,1]
 espeak.synth("Hello, Jim Bob ready to go")
 c = 0
-SerialOut.setgait(0)
-SerialOut.wait(25)
-SerialOut.state(0,0,1)
-
+serial_out.setgait(0)
+serial_out.wait(25)
+serial_out.state(0,0,1)
 sensordata = readsensor()
 priorread = time.time()+2
-print "lidar"
-print lidar
 print sensordata
 lxpos = [2015,1915,1815,1715,1615,1515,1415,1315,1215]
 lypos = [[1578,2067],[1613,2070],[1648,2090],[1683,2101],[1718,2113]]
 espeak.synth("Clear the area")
 lc = 0
-ld = 0 
+ld = 0
+
 #for ld in range (0,4):
-#   PServo.MoveServo(1,lypos[ld][1])
-#   PServo.MoveServo(0,lypos[ld][0])
-#   PServo.MoveServo(2,lxpos[lc])
+#   p_servo.MoveServo(1,lypos[ld][1])
+#   p_servo.MoveServo(0,lypos[ld][0])
+#   p_servo.MoveServo(2,lxpos[lc])
 #   time.sleep(1)  
 #   for lc in range (0,9):
 #       try: 
-#           PServo.MoveServo(2,lxpos[lc])
+#           p_servo.MoveServo(2,lxpos[lc])
 #           time.sleep(0.1)                                                                                                                    
 #           ldata[ld,lc] = lidar.getDistance()
 #       except IOError:
@@ -151,8 +148,8 @@ ld = 0
 
 
 def walk(a):
-    SerialOut.travel(a,100,0)
-    SerialOut.setgait(5)
+    serial_out.travel(a,100,0)
+    serial_out.setgait(5)
     print ('walk ', a)
     
 def run(a):
@@ -160,14 +157,14 @@ def run(a):
     if s == 0:
       espeak.synth("I'm off for a run")
       s = 1  
-    SerialOut.setgait(5)
+    serial_out.setgait(5)
     print ('run')
-    SerialOut.travel(a,100,0)
+    serial_out.travel(a,100,0)
 
 def turnR():
     x = 0
     while x < 3:
-           SerialOut.travel(0,0,90)
+           serial_out.travel(0,0,90)
            print ('right')
            time.sleep(0.1)
            x +=1
@@ -177,7 +174,7 @@ def turnR():
 def turnL():
     x = 0
     while x < 3:
-           SerialOut.travel(0,0,-90)
+           serial_out.travel(0,0,-90)
            print ('left')
            time.sleep(0.1)
            x +=1  
@@ -185,42 +182,34 @@ def turnL():
     turn_time = time.time()         
            
 def test():
-  SerialOut.wait(1)
+  serial_out.wait(1)
   while (1):
     for g in range (0,5):
-        SerialOut.setgait(g)
+        serial_out.setgait(g)
         print("gait: ")
         print(g)
         while x < 20:
-           SerialOut.travel(0,100,0)
+           serial_out.travel(0,100,0)
            time.sleep(0.1)
            x +=1  
         while x < 20:
-           SerialOut.travel(180,100,0)
+           serial_out.travel(180,100,0)
            time.sleep(0.1)
            x +=1          
-
-targethdg = hmcmag.heading()              
+             
                   
 while 1:  
-  sensordata = readsensor() 
+  sensordata = readsensor()
+  navigate.hdgchange()
   a = 0
-  currentheading = hmcmag.heading()
-  print ("current:",currentheading)
   print sensordata  
-  while  (abs(currentheading - targethdg) > headingzone):
-    print ("current:",currentheading,"  target:", targethdg)
-    direction = min(int(abs(currentheading - targethdg)+20),100)
-    SerialOut.travel(0,0,direction)
-    time.sleep(0.1)
-    currentheading = hmcmag.heading()
   if sensordata['F'] < 30 :
       if ((sensordata['LF'] > 45) and ((priorturn != 'l') or ((time.time() - turn_time ) > 20))): 
          turnL()
       elif ((sensordata['RF'] > 45) and ((priorturn != 'r') or ((time.time() - turn_time ) > 20))):  
          turnR()
       else:
-         SerialOut.backup(90) 
+         serial_out.backup(90) 
   elif ((sensordata['RF'] > 45) and (sensordata['LF'] < 35)):
            a = 90
            walk(a)

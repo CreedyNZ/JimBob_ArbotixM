@@ -1,5 +1,10 @@
 #Define Python dictionary of key values
 
+coords = {
+'i_TarPos':[0,0],
+'i_CurPos':[0,0]}
+
+
 atrib = {'i_ComMode': 0,
 'i_leftV': 0,
 'i_leftH': 0,
@@ -9,8 +14,7 @@ atrib = {'i_ComMode': 0,
 'i_Ext':0,
 'i_Bal': 0,
 'i_Mode': 0,
-'i_Gait': 0,
-'i_CurrPos':[0,0]}
+'i_Gait': 0}
 
 #attributes for a standard packet
 stdatrib = ['i_ComMode',
