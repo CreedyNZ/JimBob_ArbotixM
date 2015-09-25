@@ -33,7 +33,6 @@ from espeak import espeak
 from threading import Thread
 from lidar_lite import Lidar_Lite
 lidar = Lidar_Lite()
-from AnaSensorData import readsensor
 import p_servo
 GPIO.setmode(GPIO.BCM)
 resetpin = 13
@@ -42,13 +41,7 @@ GPIO.setup(resetpin, GPIO.OUT)
 ldata = numpy.zeros((4, 9),dtype=numpy.int)
 #Some random variables
 coords = config.coords
-a = 0
-s = 0
-l = 0
-r = 0
-priorturn = 'n'
-start_time = time.time()
-turn_time = time.time()
+
 delay = 0.1  # set rest time between command sends
 checksum = 0
 
@@ -122,32 +115,7 @@ espeak.synth("Clear the area")
 lc = 0
 ld = 0
 
-#for ld in range (0,4):
-#   p_servo.MoveServo(1,lypos[ld][1])
-#   p_servo.MoveServo(0,lypos[ld][0])
-#   p_servo.MoveServo(2,lxpos[lc])
-#   time.sleep(1)  
-#   for lc in range (0,9):
-#       try: 
-#           p_servo.MoveServo(2,lxpos[lc])
-#           time.sleep(0.1)                                                                                                                    
-#           ldata[ld,lc] = lidar.getDistance()
-#       except IOError:
-#           print 'No lidar data'
-#       lc += 1
-#   lc = 0  
-#   ld += 1    
-#ld = 0
-#print ldata
-#left = ldata[0:,:2]
-#right = ldata[0:,7:]
-#centre = ldata[0:,3:6]
-##print (left)
-#leftm =  numpy.amin(left)
-##print (centre)                        
-#centrem = numpy.amin(centre)
-##print (right)                        
-#rightm= numpy.amin(right)
+
 
 
 
@@ -207,11 +175,8 @@ def test():
              
                   
 while 1:  
-  sensordata = readsensor()
-  #use temporary heading for 5 seconds
-  if time.time() - susptime > 10:
-    temp = 0
-  nav.hdgchange(temp)
+  nav.hdgchange
+  walk(a)
   a = 0
   print sensordata  
   if sensordata['F'] < 30 :

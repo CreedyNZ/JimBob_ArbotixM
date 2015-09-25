@@ -121,6 +121,7 @@ def setgait(gait):
        r = 5
        while r > 0:
            stand()
+           stdpkt.sendpkt()
            time.sleep(0.1)
            r -= 1 
        r = 5
@@ -128,7 +129,8 @@ def setgait(gait):
            atrib['i_Gait'] = gait
            stdpkt.sendpkt()
            time.sleep(0.1)
-           r -= 1    
+           r -= 1
+           
 
 def stand():
      atrib['i_Mode'] = RESET;
@@ -137,7 +139,6 @@ def stand():
      atrib['i_RightV'] = 0
      atrib['i_RightH']= 0
      atrib['ext']= 0
-     stdpkt.sendpkt()
      
 def wait(r):
      while r > 0:
@@ -146,7 +147,6 @@ def wait(r):
       atrib['i_RightV'] = 0
       atrib['i_RightH']= 0
       atrib['ext']= 0
-      stdpkt.sendpkt()
       time.sleep(0.1)
       r -= 1
       
@@ -159,7 +159,6 @@ def state(balance,doubleT,stand):
     if(stand):
      atrib['i_Buttons'] += 4
     print (atrib['i_Buttons'])
-    stdpkt.sendpkt()
 
 def travel(angle,speed,rotate): #calculate travel related commands
      atrib['i_Mode'] = WALK
@@ -169,7 +168,7 @@ def travel(angle,speed,rotate): #calculate travel related commands
      atrib['i_RightV'] = int(math.cos (anglerad) * speed)
      atrib['i_RightH']= int(math.sin (anglerad) * speed)
      atrib['ext']= 0
-     stdpkt.sendpkt()
+
      
 def rotate(left,right,up): #calculate rotate related commands
      atrib['i_Mode'] = ROTATE
@@ -178,7 +177,6 @@ def rotate(left,right,up): #calculate rotate related commands
      atrib['i_RightV'] = 0
      atrib['i_RightH']= right
      atrib['ext']= 0
-     stdpkt.sendpkt()
      
 def translate(left,right,up): #calculate translate related commands
      atrib['i_Mode'] = TRANSLATE 
@@ -187,7 +185,6 @@ def translate(left,right,up): #calculate translate related commands
      atrib['i_RightV'] = 0
      atrib['i_RightH']= right
      atrib['ext']= 0
-     stdpkt.sendpkt()
 
 
                        
