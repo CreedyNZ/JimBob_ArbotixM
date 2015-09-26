@@ -10,6 +10,8 @@ import smbus
 import math
 import time
 import sys
+import config
+coords = config.coords
 
 class hmc5883l:
 
@@ -24,7 +26,7 @@ class hmc5883l:
         8.10: [7, 4.35],
     }
 
-    def __init__(self, port=1, address=0x1E, gauss=1.3, declination=(0,0)):
+    def __init__(self, port=1, address=0x1E, gauss=1.3, declination=(19,30)):
         self.bus = smbus.SMBus(port)
         self.address = address
 
@@ -74,7 +76,25 @@ class hmc5883l:
             headingRad -= 2 * math.pi
 
         # Convert to degrees from radians
-        headingDeg = headingRad * 180 / math.pi
+        headingDeg = int(headingRad * 180 / math.pi)
+        return headingDeg
+        
+    def adj_heading(self):
+        (x, y, z) = self.axes()
+        headingRad = math.atan2(y, x)
+        headingRad += self.__declination
+        headingRad += ((coords['i_Offset'] * math.pi)/180)
+
+        # Correct for reversed heading
+        if headingRad < 0:
+            headingRad += 2 * math.pi
+
+        # Check for wrap and compensate
+        elif headingRad > 2 * math.pi:
+            headingRad -= 2 * math.pi
+
+        # Convert to degrees from radians
+        headingDeg = int(headingRad * 180 / math.pi)
         return headingDeg
 
     def degrees(self, headingDeg):
@@ -94,8 +114,9 @@ hmcmag = hmc5883l()
 
 if __name__ == "__main__":
     # http://magnetic-declination.com/Great%20Britain%20(UK)/Harrogate#
-    compass = hmc5883l(gauss = 4.7, declination = (-2,5))
+    compass = hmc5883l(gauss = 4.7, declination = (19,30))
     while True:
         sys.stdout.write("\rHeading: " + str(compass.degrees(compass.heading())) + "     ")
+        sys.stdout.write("\rAdjHeading: " + str(compass.degrees(compass.adj_heading())) + "     ")
         sys.stdout.flush()
         time.sleep(0.5)

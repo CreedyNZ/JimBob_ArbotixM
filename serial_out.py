@@ -78,6 +78,7 @@ class Driver:
              self.ser.write(chr(atrib[k]))
              checksum += int(atrib[k])
           checksum = (255 - (checksum%256))
+          print(atrib['i_RightV'],":_:",atrib['i_RightH'])
           self.ser.write(chr(checksum))
           move_time = time.time()
           atrib['i_leftV'] = 0
@@ -139,6 +140,7 @@ def stand():
      atrib['i_RightV'] = 0
      atrib['i_RightH']= 0
      atrib['ext']= 0
+     stdpkt.sendpkt()
      
 def wait(r):
      while r > 0:
@@ -149,6 +151,7 @@ def wait(r):
       atrib['ext']= 0
       time.sleep(0.1)
       r -= 1
+      stdpkt.sendpkt()
       
 def state(balance,doubleT,stand):
     atrib['i_Buttons'] = 0
@@ -163,11 +166,15 @@ def state(balance,doubleT,stand):
 def travel(angle,speed,rotate): #calculate travel related commands
      atrib['i_Mode'] = WALK
      anglerad =  math.radians(angle) 
+     print("angle:>>>", angle)
+     print("speed:>>>", speed)
      atrib['i_leftV'] = 0
      atrib['i_leftH'] = rotate
      atrib['i_RightV'] = int(math.cos (anglerad) * speed)
      atrib['i_RightH']= int(math.sin (anglerad) * speed)
+     print("i_RightV:>>>>>>>", atrib['i_RightV'])
      atrib['ext']= 0
+     stdpkt.sendpkt()
 
      
 def rotate(left,right,up): #calculate rotate related commands
@@ -177,6 +184,7 @@ def rotate(left,right,up): #calculate rotate related commands
      atrib['i_RightV'] = 0
      atrib['i_RightH']= right
      atrib['ext']= 0
+     stdpkt.sendpkt()
      
 def translate(left,right,up): #calculate translate related commands
      atrib['i_Mode'] = TRANSLATE 
@@ -185,6 +193,6 @@ def translate(left,right,up): #calculate translate related commands
      atrib['i_RightV'] = 0
      atrib['i_RightH']= right
      atrib['ext']= 0
-
+     stdpkt.sendpkt()
 
                        
