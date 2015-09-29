@@ -85,6 +85,7 @@ class Driver:
           atrib['i_leftH'] = 0
           atrib['i_RightV'] = 0
           atrib['i_RightH']= 0
+          time.sleep(0.05)
         
     def getpkt(self):
            #get packets fromthe Arbotix_M       

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+      #!/usr/bin/env python
 
 """ 
   Core code for Hexapod         
@@ -61,6 +61,18 @@ def startup():
        time.sleep(0.1)
        x +=1
     Thread(target=play, args=("/home/hexy/git/JimBob2/Python/Sounds/r2d2.ogg",1)).start()
+    p_servo.SetX(0)
+    time.sleep(2) 
+    p_servo.SetX(180)
+    time.sleep(2)
+    p_servo.SetX(90)
+    time.sleep(2)
+    p_servo.SetY(60)
+    time.sleep(2) 
+    p_servo.SetY(130)
+    time.sleep(2)
+    p_servo.SetY(90)
+    time.sleep(2)
     reset()
     rise()
     
@@ -114,17 +126,25 @@ lc = 0
 ld = 0
 
 nav.offset()
+coords['i_CurPos'][0] = 10
+coords['i_CurPos'][1] = 0
 
-
+while(1):
+ for x in xrange(0, 5): 
+      for y in xrange(0, 30): 
+          move.walk(0,x)       
+ for x in xrange(0, 5): 
+      for y in xrange(0, 30): 
+          move.run(0,x)           
              
-nav.findtarget(10,10)            
+nav.findtarget(10,100)            
 while ((abs(coords['i_CurPos'][0]-coords['i_TarPos'][0])>targetradius) or (abs(coords['i_CurPos'][1]-coords['i_TarPos'][1])>targetradius)):  
   a = 0
-  nav.findtarget(10,10)
-nav.findtarget(20,10)   
+  nav.findtarget(10,100)
+nav.findtarget(0,10)   
 while ((abs(coords['i_CurPos'][0]-coords['i_TarPos'][0])>targetradius) or (abs(coords['i_CurPos'][1]-coords['i_TarPos'][1])>targetradius)):  
   a = 0
-  nav.findtarget(20,10)  
+  nav.findtarget(0,10)  
   
   
   

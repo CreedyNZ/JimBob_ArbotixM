@@ -1,4 +1,5 @@
 import serial
+import time
 #
 #---------------------------
 # Maestro Servo Controller
@@ -27,8 +28,8 @@ class SController:
     # controllers ports 0 and 2 would be used.
     def __init__(self,port=0):
         # Open the command port
-        #ttyStr = '/dev/ttyACM' + str(port)
-        ttyStr = '/dev/ttyPolo'
+        ttyStr = '/dev/ttyACM' + str(port)
+        #ttyStr = '/dev/ttyPolo'
         self.usb = serial.Serial(ttyStr)
         # Command lead-in and device 12 are sent for each Pololu serial commands.
         self.PololuCmd = chr(0xaa) + chr(0xc)
@@ -163,14 +164,14 @@ class SController:
 Maestro = SController()
         
 def SetX(xangle):
-    position = (xangle*33.334)+3460
-    Maestro.setTarget(2,position)   
+    position = int((xangle*10.27)+724)
+    Maestro.setTarget(2,position*4)   
 
 def SetY(Yangle):
-    positiony1 = (Yangle*49.2)+8205
-    positiony2 = (Yangle*140)+6172
-    Maestro.setTarget(0,positiony1)
-    Maestro.setTarget(1,positiony2) 
+    positiony1 = int(((Yangle**2)*0.1125)-27.875*Yangle+3439.5)
+    positiony2 = int(((Yangle**2)*-0.0719)+1.919*Yangle+2140.7)
+    Maestro.setTarget(0,positiony1*4)
+    Maestro.setTarget(1,positiony2*4) 
 
 
 def MoveServo(num,position):
@@ -213,3 +214,7 @@ def LookLow():
     MoveServo(0,2252) 
     MoveServo(1,1302)
     MoveServo(2,1615)
+   
+   
+
+    
