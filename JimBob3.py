@@ -45,7 +45,7 @@ coords = config.coords
 
 delay = 0.1  # set rest time between command sends
 checksum = 0
-
+targetradius = 2
 
 def play(file,*args):
   pygame.mixer.init()
@@ -96,7 +96,7 @@ def reset():
 
 startup()
 connected = lidar.connect(1)
-coords['i_CurPos'] = [1,1]
+coords['i_CurPos'] = [10,1]
 nav.offset()
 susptime = time.time()
 haz = 0 
@@ -117,13 +117,14 @@ nav.offset()
 
 
              
-                  
-while 1:  
-  #nav.hdgchange(0)
-  time.sleep(0.1)
+nav.findtarget(10,10)            
+while ((abs(coords['i_CurPos'][0]-coords['i_TarPos'][0])>targetradius) or (abs(coords['i_CurPos'][1]-coords['i_TarPos'][1])>targetradius)):  
   a = 0
-  nav.findtarget(20,20)
-  
+  nav.findtarget(10,10)
+nav.findtarget(20,10)   
+while ((abs(coords['i_CurPos'][0]-coords['i_TarPos'][0])>targetradius) or (abs(coords['i_CurPos'][1]-coords['i_TarPos'][1])>targetradius)):  
+  a = 0
+  nav.findtarget(20,10)  
   
   
   

@@ -31,7 +31,8 @@ class Navigate:
     def getangle(self,pC, pT):
         xDiff = pT[0] - pC[0]
         yDiff = pT[1] - pC[1]
-        return math.degrees(math.atan2(yDiff, xDiff))
+        print ("XYDiff: ", xDiff,":",yDiff)
+        return math.degrees(math.atan2(xDiff, yDiff))
 
     def odo (self,vel, angle):
         direction = self.gridhdg + angle
@@ -40,8 +41,8 @@ class Navigate:
         elif direction < 0:
            direction += 360
         anglerad =  math.radians(self.gridhdg)
-        movex = math.cos (anglerad)* vel/10
-        movey = math.sin (anglerad)* vel/10
+        movex = math.sin (anglerad)* vel
+        movey = math.cos (anglerad)* vel
         print (coords['i_CurPos'], movex,movey)
         coords['i_CurPos'][0] += movex
         coords['i_CurPos'][1] += movey
@@ -58,8 +59,11 @@ class Navigate:
         if time.time()-timer > 5:
           temp = 0
         targethdg = self.getangle(coords['i_CurPos'],coords['i_TarPos']) + temp
+        print( coords['i_CurPos'],":",coords['i_TarPos'],":",temp)
         if targethdg > 360:
            targethdg -= 360
+        if targethdg < 0:
+           targethdg += 360   
         print ("current:",currenthdg,"  target:", targethdg)
         error = targethdg - currenthdg
         while abs(error) > self.deadzone:
@@ -109,54 +113,20 @@ class Navigate:
         clear = self.obstacle()
         if (clear['F3'] and clear['L2'] and clear['R2']):
            move.run(0)
-        elif (clear['F2']):
-             if (clear['L2'] and clear['R2']):
-                  move.walk(0)
-             elif (clear['L2']): 
-                  move.walk(270) 
-             elif (clear['R2']): 
-                  move.walk(90)
+        elif (clear['F2']  and clear['L2'] and clear['R2']):
+           move.walk(0)  
         elif (clear['F1']): 
-             if (clear['L2']): 
-                  temphdg = 90
-                  self.timer = time.time()
-                  self.hdgchange(self.temphdg,self.timer)
-                  move.walk(0)
-             elif (clear['R2']): 
-                  temphdg = 270
-                  self.timer = time.time()
-                  self.hdgchange(self.temphdg,self.timer)
-                  move.walk(0) 
-             elif (clear['L1']): 
-                  temphdg = 90
-                  self.timer = time.time()+2
-                  self.hdgchange(self.temphdg,self.timer)
-                  move.walk(0)
-             elif (clear['R1']): 
-                  temphdg = 270
-                  self.timer = time.time()+2
-                  self.hdgchange(self.temphdg,self.timer)
-                  move.walk(0)
+             if (clear['L2'] or clear['L1']): 
+                  move.walk(270)
+             elif (clear['R2'] or clear['R1']): 
+                  move.walk(90)    
              else: 
-                  temphdg = 0
-                  self.timer = time.time()+2
-                  self.hdgchange(self.temphdg,self.timer)
-                  move.walk(165)        
-        elif (clear['L2']): 
-                  temphdg = 90
-                  self.timer = time.time()
-                  self.hdgchange(self.temphdg,self.timer)
-                  move.walk(0)
-        elif (clear['R2']): 
-                  temphdg = 270 
-                  self.timer = time.time()
-                  self.hdgchange(self.temphdg,self.timer)
-                  move.walk(0)                         
-        else: 
-                  temphdg = 0
-                  self.timer = time.time()
-                  self.hdgchange(self.temphdg,self.timer)
-                  move.walk(165)
+                  move.walk(165)     
+        else:          
+             temphdg = 0
+             self.timer = time.time()
+             self.hdgchange(self.temphdg,self.timer)
+             move.walk(165)
 #    def lidarscan(self):
 #        
 #        
@@ -207,7 +177,7 @@ class Move:
         stdpkt.sendpkt()
         
     def walk(self,ang):
-        #serial_out.setgait(0)
+        serial_out.setgait(0)
         serial_out.state(0,0,1)
         serial_out.travel(ang,100,0)
         nav.odo(1,ang)
@@ -222,7 +192,9 @@ class Move:
         if self.s_run == 0:
           espeak.synth("I'm off for a run")
           self.s_run = 1  
+        serial_out.setgait(5)  
         serial_out.state(0,1,1)
+        nav.odo(1.5,ang)
         print ('run')
         serial_out.travel(ang,100,0)
     
